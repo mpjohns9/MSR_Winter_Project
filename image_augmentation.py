@@ -14,7 +14,11 @@ for grip in grip_list:
 
     # grip image
     grip_img = Image.open(f"images/grips/{grip}_grip.png")
-    grip_img = grip_img.resize((int(grip_img.size[0]*1.5), int(grip_img.size[1]*1.5)))
+
+    grip_x = random.randint(int(grip_img.size[0]*0.6), int(grip_img.size[0]*1.6))
+    grip_y = random.randint(int(grip_img.size[1]*0.6), int(grip_img.size[1]*1.6))
+
+    grip_img = grip_img.resize((grip_x, grip_y))
     for file in os.listdir(f"images/backgrounds/{test_or_train}"):
 
         # background image
