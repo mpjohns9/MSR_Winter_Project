@@ -40,7 +40,8 @@ class Net(nn.Module):
         return x
 
 class Network:
-    def __init__(self):
+    def __init__(self, save):
+        self.save = save
         self.train_dir = os.path.join(os.getcwd(),'images/train')
         self.test_dir = os.path.join(os.getcwd(),'images/test')
 
@@ -56,7 +57,7 @@ class Network:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-    def train_model(self, save=False, epochs=1000):
+    def train_model(self, epochs=1000):
         net = Net().to(self.device)
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -88,7 +89,7 @@ class Network:
 
         print('Finished Training')
 
-        if save:
+        if self.save:
             PATH = 'trained_model.pth'
             torch.save(net.state_dict(), PATH)
 
