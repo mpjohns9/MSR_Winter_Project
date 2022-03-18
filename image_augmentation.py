@@ -1,3 +1,9 @@
+"""Script to augment image dataset.
+
+Creates larger synthetic dataset from a smaller subset of images.
+In this case, baseball grips are added to a background.
+"""
+
 from PIL import Image, ImageEnhance
 import os
 import random
@@ -6,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 # set which image set is being generated
-test_or_train = 'test'
+test_or_train = 'train'
 
 # list of grip class names
 grip_list = ["changeup", "curveball", "fastball"]
@@ -24,6 +30,13 @@ use_bg = False
 name_list = [
     'marshall',
     'marshall2',
+    'marshall3',
+    'marshall4',
+    'marshall5',
+    'marshall6',
+    'marshall7',
+    'marshall8',
+    'marshall9',
     'andru',
     'anna',
     'devesh'
@@ -35,7 +48,7 @@ for name in name_list:
 
         grip_img_list = []
 
-        for i in range(200):
+        for i in range(300):
             grip_num = random.randint(0, num_grips-1)
 
             # grip image
@@ -65,7 +78,7 @@ for name in name_list:
             if not use_bg:
                 filter = ImageEnhance.Brightness(grip_resized)
                 grip_final = filter.enhance(random.uniform(0.75, 1.25))
-                grip_final.save(f"images/grips/augmented/cropped/{test_or_train}/{grip}/{name}_{grip}-{i+1}.jpg")
+                grip_final.save(f"images/grips/{test_or_train}/{grip}/{name}_{grip}-{i+1}.jpg")
                 
             grip_img_list.append(grip_resized)
 
@@ -89,14 +102,6 @@ for name in name_list:
                     if y_limit < 0:
                         y_limit = 0
 
-                    # print(f"GRIP: {grip_img.size}")
-                    # print(f"BG: {bg_img.size}")
-                    # print()
-                    # print(f"XLIM: {x_limit}")
-                    # print(f"YLIM: {y_limit}")
-                    # print()
-
-                    # paste grip onto background and save
                     x_paste = random.randint(0,x_limit)
                     y_paste = random.randint(0,y_limit)
                     bg_img.paste(grip_img, (x_paste, y_paste), grip_img)
