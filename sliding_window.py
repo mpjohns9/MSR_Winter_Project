@@ -1,97 +1,100 @@
+
+""" Sliding window method for object detection of baseball. """
+
 import cv2
-import time
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
-import numpy as np
 import pandas as pd
+from train_model import Net
 
-import classify_grip
+class slidingWindow:
+    def __init__(self, model_dir):
+        """The init function."""
 
-def sliding_window(image, window=(300, 300), step=32):
-    for y in range(0, image.shape[0], step):
-        for x in range(0, image.shape[1], step):
-            yield (x, y, image[y:y+window[1], x:x+window[0]])
+        self.net = Net()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if model_dir:
+            self.net.load_state_dict(torch.load(model_dir, map_location=torch.device(self.device)))
 
-
-image = cv2.imread('images/grips/augmented/test/curveball/curveball_487894806.jpg-0.jpg')
-
-resized = cv2.resize(image, (int(image.shape[1]*2), int(image.shape[0]*2)))
-
-net = classify_grip.Net()
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-PATH = 'beast_model.pth'
-net.load_state_dict(torch.load(PATH, map_location=torch.device(device)))
-
-transform = transforms.Compose([
+        self.transform = transforms.Compose([
             transforms.Resize([224,224]),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5))])
 
-highest_p = 0
-top_window = []
-df = pd.DataFrame(columns=[*range((resized.shape[1]-300)//32)])
-row = []
-append_flag = False
-for i, (x, y, window) in enumerate(sliding_window(resized)):
+    def sliding_window(image, window=(300, 300), step=32):
+        """Creates sliding window over image with step size.
 
-    if (x + 300 > resized.shape[1]) or (y + 300 > resized.shape[0]):
-        if append_flag:
-            df.loc[i] = row[:-1]
-        append_flag = False
-        row = []
-        count = 0
-        continue
+        Args:
+            image: image to slide over
+            window: window size; defaults to (300, 300)
+            step: step size; defaults to 32
 
-    append_flag = True
-    # cv2.rectangle(resized, (x, y), (x+300, y+300), (255, 0, 0), 2)
-    # # cv2.rectangle(resized, (x, y), (x + window[0], y + window[1]), (255, 0, 0), 3)
-    # cv2.imshow("test", resized)
-    # cv2.waitKey(1)
-    time.sleep(0.05)
-    im = Image.fromarray(window*255)
-    transformed = transform(im)
-    normalized = transformed.float().unsqueeze(0)
-    output = net(normalized)
-
-    prob = torch.softmax(output.data, 1)
-    top_p, top_class = prob.topk(1, 1)
-
-    if top_p > highest_p:
-        highest_p = top_p
-        top_window = ((x, y), (x+300, y+300))
-    row.append(top_p.numpy()[0][0])
+        Yields:
+            x, y, image: x, y coords of upper left window and 
+                         portion of image in window
+        """
+        for y in range(0, image.shape[0], step):
+            for x in range(0, image.shape[1], step):
+                yield (x, y, image[y:y+window[1], x:x+window[0]])
     
+    def detect(self, image=cv2.imread('function_output.png'), save=False):
+        """Uses sliding window to detect baseball in image.
 
-# df.to_csv('output.csv')
+        Args:
+            image: image to run object detection on
+            save: saves area of image detected if True
+            
+        Baseball detection based on classifier probability.
+        """
 
-df = df.applymap(lambda x: 0.0 if (x < 0.9) else x)
+        resized = cv2.resize(image, (int(image.shape[1]), int(image.shape[0])))
 
-high_score = 0
-high_xy = None
+        highest_p = 0
+        df = pd.DataFrame(columns=[*range((resized.shape[1]-300)//32)])
+        row = []
+        append_flag = False
+        for i, (x, y, window) in enumerate(self.sliding_window(resized)):
 
-for index in range(df.shape[0]-2):
-    for i in range(df.shape[1]-2):
-        score = df.iloc[index:3+index, i:3+i].values.mean()
-        print(score)
-        if score > high_score:
-            high_score = score
-            high_xy = ((i-1)*32, (index-1)*32)
-        # cv2.rectangle(resized, (i*32, index*32), (364+(i*32), 364+(index*32)), (0, 255, 0), 2)
-        # cv2.imshow("test", resized)
-        # cv2.waitKey(1)
-        # time.sleep(0.05)
+            if (x + 300 > resized.shape[1]) or (y + 300 > resized.shape[0]):
+                if append_flag:
+                    df.loc[i] = row[:-1]
+                append_flag = False
+                row = []
+                continue
 
-# print(high_xy)
-# cv2.rectangle(resized, high_xy, (high_xy[0]+364, high_xy[1]+364), (0, 255, 0), 2)
-# cv2.imshow("test", resized)
-# cv2.waitKey(10000)
+            append_flag = True
+            im = Image.fromarray(window*255)
+            transformed = self.transform(im)
+            normalized = transformed.float().unsqueeze(0)
+            output = self.net(normalized)
 
-classify_window = resized[high_xy[1]:high_xy[1]+428, high_xy[0]:high_xy[0]+428]
-cv2.imwrite('test_image.png', classify_window)
+            prob = torch.softmax(output.data, 1)
+            top_p, top_class = prob.topk(1, 1)
+
+            if top_p > highest_p:
+                highest_p = top_p
+                top_window = ((x, y), (x+300, y+300))
+            row.append(top_p.numpy()[0][0])
+    
+        # clear lower prob numbers to skew those areas down
+        df = df.applymap(lambda x: 0.0 if (x < 0.9) else x)
+
+        high_score = 0
+        high_xy = None
+
+        for index in range(df.shape[0]-2):
+            for i in range(df.shape[1]-2):
+                score = df.iloc[index:3+index, i:3+i].values.mean()
+                print(score)
+                if score > high_score:
+                    high_score = score
+                    high_xy = ((i-1)*32, (index-1)*32)
+
+        classify_window = resized[high_xy[1]:high_xy[1]+428, high_xy[0]:high_xy[0]+428]
+        if save:
+            cv2.imwrite('test_image.png', classify_window)
         
 
 
