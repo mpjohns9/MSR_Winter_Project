@@ -34,25 +34,56 @@ can be found in subsequent sections.
  - `predict.py`: real-time classification using trained model
  - `train_model.py`: trains CNN on train & test images (examples provided)
 
- ## Process
+## Usage Instructions & Description
+ 
+### image_augmentation.py
+To run this file use the following command: 
+    ```
+    python3 image_augmentation.py   
+    ```
+This will generate 300 images of each grip (fastball, curveball, changeup). As a training set.
+To generate the test set, change the `test_or_train` variable to `test`.  
 
- ### Data Collection & Augmentation
- Due the the lack of a baseball grip dataset, I wrote a couple scripts to generate a synthetic 
- one of my own. The `image_collection.py` to aid in collecting a large amount of grip images in 
- a short amount of time. This script was distributed to peers in an effort to make the model 
- more generalizable.  
+The script performs the following augmentation techniques to your source images: 
+ - Scaling
+ - Transposition (Flipping Horizontally)
+ - Rotation
+ - Brightness Adjustment
 
- Next came augmentation. To avoid overfitting and provide a wide variety of angles, lighting
- conditions and other real-life variables more thoroughly than 100 images can, 
- `image_augmentation.py` was written. This script takes images generated from `image_collection.py`
- and augments them, ultimately generating a dataset of over 30,000 images from an original 
- collection of 100 images per class (fastball, curveball, and changeup).  
+Scaling                    |  Transposition            | Rotation                  | Brightness
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+![](test_image.png)  |  ![](test_test.png)
 
- This process allowed for the generation of a large baseball grip image dataset in a short 
- period of time, thanks to image collection and augmentation techniques.
+### image_collection.py
+To run this file use the following command: 
+    ```
+    python3 image_augmentation.py   
+    ```
+This will start the image collection process using your webcam. Instructions and prompts can
+be followed in the terminal window from which you executed the above command. These 
+instructions will guide you through the process of taking 10 images of each grip (fastball, 
+curveball, and changeup) and saving them. 
 
- ### Training the Model
 
- ### Prediction in Real-Time
+## Process
 
- ### Object Detection
+### Data Collection & Augmentation
+Due the the lack of a baseball grip dataset, I wrote a couple scripts to generate a synthetic 
+one of my own. The `image_collection.py` aids in collecting a large amount of grip images in 
+a short amount of time. This script was distributed to peers in an effort to make the model 
+more generalizable.  
+
+Next came augmentation. To avoid overfitting and provide a wide variety of angles, lighting
+conditions and other real-life variables more thoroughly than 100 images can, 
+`image_augmentation.py` was written. This script takes images generated from `image_collection.py`
+and augments them, ultimately generating a dataset of over 30,000 images from an original 
+collection of 100 images per class (fastball, curveball, and changeup).  
+
+This process allowed for the generation of a large baseball grip image dataset in a short 
+period of time, thanks to image collection and augmentation techniques.
+
+### Training the Model
+
+### Prediction in Real-Time
+
+### Object Detection
