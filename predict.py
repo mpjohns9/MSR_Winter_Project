@@ -2,14 +2,21 @@ import cv2
 from PIL import Image
 import numpy as np
 import torchvision.transforms as transforms
-from train_model import Network
+from train_model import Net, Network
 import torch
 
 
-def predict_grip():
+def predict_grip(model_path):
     """ Shows video and displays classified grip on screen.
+
+        Args:
+            model_path: path to classification network to be run in real-time
     """
-    
+    nw = Network(model_path)
+    net = Net()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    net.load_state_dict(torch.load(model_path, map_location=torch.device(device)))
+
     cam = cv2.VideoCapture(0)
 
     cv2.namedWindow("grip")
@@ -32,7 +39,7 @@ def predict_grip():
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0) , 3)  
 
         cv2.putText(frame, 
-                    Network.classes[avg_pred], 
+                    nw.classes[avg_pred], 
                     (50, 50), 
                     font, 1, 
                     (255, 0, 0), 
@@ -60,7 +67,7 @@ def predict_grip():
     #         cv2.imwrite("cropped.png", cropped)
         transformed = transform(im)
         normalized = transformed.float().unsqueeze(0)
-        output = Network.net(normalized)
+        output = net(normalized)
         # the class with the highest energy is what we choose as prediction
         _, predicted = torch.max(output.data, 1)
     #     print(classes[predicted])
