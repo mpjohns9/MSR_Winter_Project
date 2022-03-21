@@ -155,7 +155,7 @@ before adding in object detection (future feature). When gripping a baseball wih
 results proved to be ~87% accurate. 
 
 Since the vast majority of the original source images were mine, the model is less accurate when 
-testing on other users. Still, classification in a small sample size of (n = 3) of other users 
+testing on other users. Still, classification in a small sample size (n = 3) of other users 
 showed ~60% accuracy. This will be improved in the future by incorporating data from a wider
 range of users.
 
