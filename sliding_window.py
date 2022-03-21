@@ -7,15 +7,14 @@ import torchvision.transforms as transforms
 from PIL import Image
 import pandas as pd
 from train_model import Net
+import argparse
 
 class slidingWindow:
-    def __init__(self, model_dir):
+    def __init__(self):
         """The init function."""
-
         self.net = Net()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        if model_dir:
-            self.net.load_state_dict(torch.load(model_dir, map_location=torch.device(self.device)))
+        self.net.load_state_dict(torch.load(args.model, map_location=torch.device(self.device)))
 
         self.transform = transforms.Compose([
             transforms.Resize([224,224]),
@@ -23,7 +22,7 @@ class slidingWindow:
             transforms.ToTensor(),
             transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5))])
 
-    def sliding_window(image, window=(300, 300), step=32):
+    def sliding_window(self, image, window=(300, 300), step=32):
         """Creates sliding window over image with step size.
 
         Args:
@@ -39,7 +38,7 @@ class slidingWindow:
             for x in range(0, image.shape[1], step):
                 yield (x, y, image[y:y+window[1], x:x+window[0]])
     
-    def detect(self, image=cv2.imread('function_output.png'), save=False):
+    def detect(self, img, save=False):
         """Uses sliding window to detect baseball in image.
 
         Args:
@@ -49,7 +48,10 @@ class slidingWindow:
         Baseball detection based on classifier probability.
         """
 
-        resized = cv2.resize(image, (int(image.shape[1]), int(image.shape[0])))
+        image = cv2.imread(img)
+
+        scale_factor = 750/image.shape[1]
+        resized = cv2.resize(image, (int(image.shape[1]*scale_factor), int(image.shape[0]*scale_factor)))
 
         highest_p = 0
         df = pd.DataFrame(columns=[*range((resized.shape[1]-300)//32)])
@@ -87,15 +89,25 @@ class slidingWindow:
         for index in range(df.shape[0]-2):
             for i in range(df.shape[1]-2):
                 score = df.iloc[index:3+index, i:3+i].values.mean()
-                print(score)
                 if score > high_score:
                     high_score = score
                     high_xy = ((i-1)*32, (index-1)*32)
 
         classify_window = resized[high_xy[1]:high_xy[1]+428, high_xy[0]:high_xy[0]+428]
         if save:
-            cv2.imwrite('test_image.png', classify_window)
+            cv2.imwrite(f'baseball_detection.png', classify_window)
         
+if __name__ == "__main__":
+    # initialize terminal arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str, required=True, help="path to saved network")
+    parser.add_argument('--image', type=str, required=True, help="path to desired image")
+    parser.add_argument('--save', type=bool, required=False, help="true if cropped output should be saved")
+    args = parser.parse_args()
+
+    sw = slidingWindow()
+    sw.detect(img=args.image, save=args.save)
+
 
 
 
