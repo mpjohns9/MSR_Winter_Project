@@ -35,6 +35,27 @@ can be found in subsequent sections.
  - `train_model.py`: trains CNN on train & test images (examples provided)
 
 ## Usage Instructions & Description
+
+### main.py
+This file can be used to both train a model on an image dataset and also load a trained model
+to perform baseball grip classification in real-time using a webcam. When running `predict.py`
+holding up a baseball to the camera within the bounding box shown will result in the grip being 
+classified as indicated by blue text on the video frame. To run this file, use the command 
+`python3 main.py` with some or all of the following arguments:  
+ - `--train`: desired path to where trained model will be saved (default trained_model.pth)
+ - `--epochs`: the number of epochs used in training the model (default 1000)
+ - `--predict`: the path to model used for classification in real-time
+ Note: including the path for the `train` or `predict` arguments will run that step (i.e., If a
+ `train` path is provided, the model will be trained, otherwise it will not.).  
+
+ Examples of use:
+ ```
+ python3 main.py --train "my_model.pth" --epochs 50 # trains model over 50 epochs and saves as 
+ my_model.pth
+
+ python3 main.py --predict "my_model.pth" # loads my_model.pth and runs real-time classification 
+ using webcam
+ ```
  
 ### image_augmentation.py
 To run this file use the following command: 
@@ -44,7 +65,7 @@ To run this file use the following command:
 This will generate 300 images of each grip (fastball, curveball, changeup). As a training set.
 To generate the test set, change the `test_or_train` variable to `test`.  
 
-The script performs the following augmentation techniques to your source images: 
+The script performs the following augmentation techniques to a set of source images: 
  - Scaling
  - Transposition (Flipping Horizontally)
  - Rotation
@@ -52,16 +73,16 @@ The script performs the following augmentation techniques to your source images:
 
 Scaling                    |  Transposition            | Rotation                  | Brightness
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-<img src="images/examples/curveball_scaled.jpg" width="200" /> |  ![](images/examples/curveball_transposition.jpg) | ![](images/examples/curveball_rotation.jpg) | ![](images/examples/curveball_bright.jpg)
+<img src="images/examples/curveball_scaled.jpg" width="200" /> |  <img src="images/examples/curveball_transposition.jpg" width="400" /> | <img src="images/examples/curveball_rotation.jpg" width="400" /> | <img src="images/examples/curveball_bright.jpg" width="400" />
 
 ### image_collection.py
 To run this file use the following command: 
     ```
     python3 image_augmentation.py   
     ```
-This will start the image collection process using your webcam. Instructions and prompts can
-be followed in the terminal window from which you executed the above command. These 
-instructions will guide you through the process of taking 10 images of each grip (fastball, 
+This will start the image collection process using a webcam. Instructions and prompts can
+be followed in the terminal window from which the user executed the above command. These 
+instructions will guide a user through the process of taking 10 images of each grip (fastball, 
 curveball, and changeup) and saving them. 
 
 
