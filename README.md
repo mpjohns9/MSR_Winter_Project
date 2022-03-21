@@ -8,8 +8,8 @@ that tip off what pitch is being thrown, the chances of success (getting a hit)
 are much higher.  
 
 With this in mind, this project is the preliminary step in attempting to 
-assess a pitcher's ability to disguise pitches. Using a convulutional 
-nueral network, baseball grips are classified with their corresponding
+assess a pitcher's ability to disguise pitches. Using a convolutional 
+neural network, baseball grips are classified with their corresponding
 pitch in real-time. Combined with pose estimation, this could serve as a
 foundation for future development on pitch prediction in real-time.
 
@@ -21,7 +21,7 @@ to generate the synthetic dataset that my model is trained and tested
 on. The details of this process are explored in depth later on in this
 README.
 
-Thank you for your time and interest --- enjoy!
+Thank you for your time and interest &mdash enjoy!
 
 ## Contents
 This package contains the following files. In-depth descriptions for each 
