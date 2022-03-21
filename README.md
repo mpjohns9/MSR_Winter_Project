@@ -172,6 +172,8 @@ doing the work of the previuosly predefined bounding box. This feature has been 
 on still images, but has yet to be incorporated into real time due to time and speed 
 constraints. Moving forward, this will be implemented to improve flexibility. 
 
+![](images/resources/obj_detect.gif)
+
 ## Moving Forward
 In the short term, there are two immediate areas for improvement:
  1. Improve generalizability of classification network
