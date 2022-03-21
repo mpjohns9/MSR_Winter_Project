@@ -52,7 +52,7 @@ The script performs the following augmentation techniques to your source images:
 
 Scaling                    |  Transposition            | Rotation                  | Brightness
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![](test_image.png)  |  ![](test_test.png)
+![](test_image.png)  |  ![](test_test.png) | | 
 
 ### image_collection.py
 To run this file use the following command: 
