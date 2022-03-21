@@ -52,7 +52,7 @@ The script performs the following augmentation techniques to your source images:
 
 Scaling                    |  Transposition            | Rotation                  | Brightness
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![](test_image.png)  |  ![](test_test.png) | | 
+![](images/examples/curveball_scaled.png)  |  ![](images/examples/curveball_transposition.png) | ![](images/examples/curveball_rotation.png) | ![](images/examples/curveball_bright.png)
 
 ### image_collection.py
 To run this file use the following command: 
