@@ -37,8 +37,8 @@ def main():
 if __name__ == "__main__":
     # initialize terminal arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train', type=str, required=False)
-    parser.add_argument('--epochs', type=int, required=False)
-    parser.add_argument('--predict', type=str, required=False)
+    parser.add_argument('--train', type=str, required=False, help="desired path to where trained model will be saved (default trained_model.pth)")
+    parser.add_argument('--epochs', type=int, required=False, help="the number of epochs used in training the model (default 1000)")
+    parser.add_argument('--predict', type=str, required=False, help="the path to model used for classification in real-time")
     args = parser.parse_args()
     main()
