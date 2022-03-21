@@ -9,7 +9,7 @@ are much higher.
 
 With this in mind, this project is the preliminary step in attempting to 
 assess a pitcher's ability to disguise pitches. Using a convolutional 
-neural network, baseball grips are classified with their corresponding
+neural network (CNN), baseball grips are classified with their corresponding
 pitch in real-time. Combined with pose estimation, this could serve as a
 foundation for future development on pitch prediction in real-time.
 
@@ -21,10 +21,16 @@ to generate the synthetic dataset that my model is trained and tested
 on. The details of this process are explored in depth later on in this
 README.
 
-Thank you for your time and interest &mdash enjoy!
+Thank you for your time and interest -- enjoy!
 
 ## Contents
 This package contains the following files. In-depth descriptions for each 
 can be found in subsequent sections.  
 
-image_augmentation.py
+ - `image_augmentation.py`: generates large synthetic dataset from subset of example images  
+ - `image_collection.py`: script used to collect images quickly
+ - `main.py`: runs model training and prediction program with modifiable arguments
+ - `predict.py`: real-time classification using trained model
+ - `train_model.py`: trains CNN on train & test images (examples provided)
+
+ 
