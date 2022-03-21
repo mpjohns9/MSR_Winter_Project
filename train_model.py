@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 """ File to train neural network on baseball grip data. """
 
 import torch
@@ -40,13 +37,13 @@ class Net(nn.Module):
         return x
 
 class Network:
-    def __init__(self, save):
-        self.save = save
+    def __init__(self, model_path):
+        self.path = model_path
         self.train_dir = os.path.join(os.getcwd(),'images/train')
         self.test_dir = os.path.join(os.getcwd(),'images/test')
 
-        self.train_loader = self.gen_loader(data_dir=self.train_dir)
-        self.test_loader = self.gen_loader(data_dir=self.test_dir, train=False)
+        self.train_loader = self.gen_loader(dir=self.train_dir)
+        self.test_loader = self.gen_loader(dir=self.test_dir, train=False)
 
         self.classes = (
             'changeup',
@@ -57,7 +54,7 @@ class Network:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-    def train_model(self, epochs=1000):
+    def train(self, epochs=1000):
         net = Net().to(self.device)
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -68,8 +65,8 @@ class Network:
             running_loss = 0.0
             for i, data in enumerate(self.train_loader, 0):
                 inputs, labels = data
-                inputs = inputs.cuda()
-                labels = labels.cuda()
+                inputs = inputs.to(self.device)
+                labels = labels.to(self.device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -89,14 +86,13 @@ class Network:
 
         print('Finished Training')
 
-        if self.save:
-            PATH = 'trained_model.pth'
-            torch.save(net.state_dict(), PATH)
+        PATH = self.path
+        torch.save(net.state_dict(), PATH)
 
         return net
 
 
-    def gen_loader(dir, batch_size=4, train=True):
+    def gen_loader(self, dir, batch_size=4, train=True):
         """Generates data loader for batch dataset
 
         Args:
